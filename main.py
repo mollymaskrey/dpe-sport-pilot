@@ -810,16 +810,6 @@ def build_layout():
             ),
 
             # Hidden state stores
-            dcc.Store(id="conversation-store", data=[]),
-            dcc.Store(id="session-meta-store", data={
-                "active": False,
-                "topics": [],
-                "current_topic_idx": 0,
-                "hint_counts": {},
-                "turn_counts": {},
-            }),
-            dcc.Store(id="pilot-name-store", data="Pilot"),
-            dcc.Store(id="thinking-store", data=False),
         ]
     )
 
@@ -899,7 +889,17 @@ app.index_string = f"""
 """
 
 app.layout = html.Div([
+    # All stores live here permanently — never inside swapped content
     dcc.Store(id="pilot-name-store", data=""),
+    dcc.Store(id="conversation-store", data=[]),
+    dcc.Store(id="session-meta-store", data={
+        "active": False,
+        "topics": [],
+        "current_topic_idx": 0,
+        "hint_counts": {},
+        "turn_counts": {},
+    }),
+    dcc.Store(id="thinking-store", data=False),
     dcc.Location(id="url"),
     html.Div(id="page-content", children=build_splash()),
 ])
@@ -923,7 +923,7 @@ def handle_splash(n_clicks, n_submit, name):
     if not name or not name.strip():
         return no_update, no_update, "// enter your name to begin", "msg-denied"
     pilot = name.strip().title()
-    return build_layout(), pilot, f"// welcome, {pilot}", "msg-granted"
+    return build_layout(), pilot, no_update, no_update
 
 
 @app.callback(
