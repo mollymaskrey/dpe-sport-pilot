@@ -472,9 +472,9 @@ def build_full_layout():
     # ── EXAM ────────────────────────────────────────────────────────────────
     exam = html.Div(id="exam-screen", style=HIDE, children=[
         html.Div(style={
-            "backgroundColor": "#0D1117", "minHeight": "100vh",
+            "backgroundColor": "#0D1117", "height": "100vh",
             "fontFamily": "'IBM Plex Mono', monospace", "color": "#C9D1D9",
-            "display": "flex", "flexDirection": "column",
+            "display": "flex", "flexDirection": "column", "overflow": "hidden",
         }, children=[
             # Header
             html.Div(style={
@@ -495,7 +495,7 @@ def build_full_layout():
             # Body
             html.Div(style={
                 "display": "flex", "flex": "1", "overflow": "hidden",
-                "height": "calc(100vh - 53px)",
+                "height": "calc(100vh - 53px)", "minHeight": "0",
             }, children=[
                 # Sidebar
                 html.Div(style={
@@ -526,6 +526,7 @@ def build_full_layout():
                 html.Div(style={
                     "flex": "1", "display": "flex",
                     "flexDirection": "column", "overflow": "hidden",
+                    "minHeight": "0",
                 }, children=[
                     html.Div(id="topic-banner", style={
                         "padding": "8px 20px", "backgroundColor": "#0D1117",
