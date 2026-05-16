@@ -652,7 +652,7 @@ def build_full_layout():
                             html.Div("✈", style={"fontSize": "40px",
                                                   "marginBottom": "16px", "color": "#30363D"}),
                             html.P("Ready when you are."),
-                            html.P("Hit Start Session to begin your oral exam.",
+                            html.P("Hit Start Session to begin.",
                                    style={"fontSize": "10px", "color": "#555"}),
                         ]),
                     ]),

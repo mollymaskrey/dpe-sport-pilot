@@ -1,28 +1,39 @@
 # DPE Sport Pilot Oral Examiner
 
-A Socratic oral exam simulator for Sport Pilot applicants, grounded in KFNL (Fort Collins-Loveland Municipal Airport), the Van's RV-12 with a carbureted Rotax 912 ULS, and northern Colorado airspace and weather. Built with Dash/Plotly, deployed on Render.
+A Socratic oral exam simulator and aviation knowledge tool for Sport Pilot applicants, grounded in KFNL (Fort Collins-Loveland Municipal Airport), the Van's RV-12 with a carbureted Rotax 912 ULS, and northern Colorado airspace and weather. Built with Dash/Plotly, deployed on Render.
 
 ---
 
 ## Overview
 
-This app simulates a friendly but rigorous DPE oral exam. "Dave" — a 30-year front range pilot — uses the Socratic method to probe understanding, not just correct answers. He gives hints when you're stuck, pushes back even when you're right, and works through 3 weighted knowledge areas per session drawn from the full Sport Pilot ACS task list.
+Two modes, one persona — Dave, a friendly 30-year front range DPE who wants you to pass.
 
-Session history is persisted to disk. Topics you haven't seen recently, or where confidence was low, get prioritized in the next session.
+### ⚡ DPE Exam Mode
+Dave picks 3 weighted knowledge areas per session and uses the Socratic method to probe understanding, not just correct answers. He gives hints when you're stuck, pushes back even when you're right, and only moves on when he's genuinely satisfied. Sessions are logged — areas you haven't seen recently or where confidence was low get prioritized next time.
 
-**Knowledge areas covered:**
-- Weather & Meteorology (front range specific)
-- Aircraft Systems — RV-12 / Rotax 912
-- Airspace (KFNL Class D, Denver Class B proximity)
-- Performance & Limitations (density altitude at 5016 MSL)
-- Sport Pilot Privileges & Limitations (including MOSAIC)
-- Aeromedical Factors
-- Aerodynamics & Flight Principles
-- Cross-Country Planning
-- Emergency Procedures
-- Airport & Traffic Pattern Operations
-- Navigation & Charts
-- Required Documents & Inspections
+### ◎ Oracle Mode
+You drive. Bring something you flew today, a system you want to understand, a reg you're fuzzy on. Dave explains it thoroughly, calibrates to what you already know, and follows the conversation wherever it goes. Sessions are not logged — use Export Session to save the conversation as a `.txt` file for your notes.
+
+---
+
+## Knowledge Areas (DPE Mode)
+
+| Area | Weight |
+|---|---|
+| Weather & Meteorology (front range specific) | 10 |
+| Aircraft Systems — RV-12 / Rotax 912 | 10 |
+| Emergency Procedures | 8 |
+| Airspace (KFNL Class D, Denver Class B proximity) | 9 |
+| Performance & Limitations (density altitude at 5016 MSL) | 9 |
+| Sport Pilot Privileges & Limitations (MOSAIC current rules) | 9 |
+| Aeromedical Factors | 7 |
+| Aerodynamics & Flight Principles | 7 |
+| Cross-Country Planning | 7 |
+| Airport & Traffic Pattern Operations | 6 |
+| Navigation & Charts | 6 |
+| Required Documents & Inspections | 4 |
+
+Topic selection is weighted by base difficulty, recency penalty (areas covered recently are deprioritized), and confidence score (areas where hints were needed get boosted).
 
 ---
 
@@ -111,7 +122,7 @@ git push -u origin main
 
 1. Go to **render.com** → your project → **New Web Service**
 2. Connect repo: `mollymaskrey/dpe-sport-pilot`
-   - If repo doesn't appear, click **Credentials → Configure in GitHub** and grant access
+   - If repo doesn't appear: Credentials → Configure in GitHub → grant access
 3. Settings:
    - **Branch:** `main`
    - **Runtime:** Python 3
@@ -137,7 +148,7 @@ In Render → **Disk** → Add disk:
 | Mount Path | `/var/data` |
 | Size | 1 GB |
 
-The session log (`/var/data/session_log.json`) tracks topic recency and confidence scores across sessions. It survives redeploys on paid tiers with persistent disk.
+The session log (`/var/data/session_log.json`) tracks topic recency and confidence scores across DPE sessions. Oracle sessions are never logged.
 
 ---
 
@@ -155,7 +166,7 @@ App is live at: **https://dpe-sport-pilot.onrender.com**
 
 ---
 
-## Session Log Format
+## Session Log Format (DPE Mode only)
 
 ```json
 {
@@ -174,7 +185,28 @@ App is live at: **https://dpe-sport-pilot.onrender.com**
 }
 ```
 
-Confidence is computed from hint count per topic. Areas with lower confidence and longer time since last seen are weighted higher in the next session's topic selection.
+Confidence is computed from hint count per topic. Areas with lower confidence and longer time since last seen are weighted higher in the next session's topic selection. Oracle mode sessions are excluded from this log.
+
+---
+
+## Exporting Oracle Sessions
+
+Hit **⬇ Export Session** in the header at any time. Downloads a `.txt` file formatted as:
+
+```
+DPE Sport Pilot Oral Examiner — Oracle Mode
+Pilot: Molly
+Date: 2026-05-16
+============================================================
+
+[Dave]
+Hey Molly! Good to see you...
+
+[Molly]
+I was working on the 912 the other day...
+```
+
+Ready to open in Word or paste into your notes.
 
 ---
 
