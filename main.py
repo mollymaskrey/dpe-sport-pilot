@@ -695,7 +695,10 @@ def handle_interaction(start_clicks, send_clicks, user_text,
             "hint_counts": {t: 0 for t in topics},
             "turn_counts": {t: 0 for t in topics},
         }
-        opening = get_ai_response([], system_prompt)
+        opening = get_ai_response(
+            [{"role": "user", "content": "Hello, I'm ready to begin my oral exam."}],
+            system_prompt
+        )
         conversation = [{"role": "assistant", "content": opening}]
         bubbles = [make_bubble("assistant", opening, pilot_name)]
         banner = "TODAY'S TOPICS: " + " → ".join(
