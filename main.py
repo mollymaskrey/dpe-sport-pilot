@@ -384,6 +384,9 @@ YOUR ROLE:
 TONE: Relaxed, collegial, enthusiastic about aviation. You love this stuff and it shows. No exam pressure, no judgment. Just a good conversation between pilots.
 
 Do not break character. Do not explain that you are an AI. You are Dave."""
+
+
+def get_ai_response(messages: list, system_prompt: str) -> str:
     client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
     response = client.messages.create(
         model="claude-sonnet-4-20250514",
@@ -560,29 +563,72 @@ def build_full_layout():
                 "height": "calc(100vh - 53px)", "minHeight": "0",
             }, children=[
                 # Sidebar
-                html.Div(style={
+                html.Div(id="sidebar-panel", style={
                     "width": "220px", "flexShrink": "0",
                     "backgroundColor": "#161B22", "borderRight": "1px solid #30363D",
                     "padding": "16px", "overflowY": "auto",
                 }, children=[
-                    html.P("KNOWLEDGE AREAS", style={
-                        "fontSize": "9px", "color": "#58A6FF", "letterSpacing": "0.12em",
-                        "marginBottom": "12px", "borderBottom": "1px solid #21262D",
-                        "paddingBottom": "6px",
-                    }),
-                    html.Div(build_area_stats(), id="area-stats"),
-                    html.P("CONFIDENCE", style={
-                        "fontSize": "9px", "color": "#8B949E",
-                        "letterSpacing": "0.1em", "marginTop": "12px", "marginBottom": "6px",
-                    }),
-                    *[html.Div([
-                        html.Span("● ", style={"color": c, "fontSize": "10px"}),
-                        html.Span(label, style={"fontSize": "9px", "color": "#8B949E"}),
-                    ]) for c, label in [
-                        ("#3FB950", "≥ 80%  Strong"),
-                        ("#F0883E", "60–79%  Review"),
-                        ("#EF5350", "< 60%  Focus here"),
-                    ]],
+                    # DPE sidebar
+                    html.Div(id="dpe-sidebar", children=[
+                        html.P("KNOWLEDGE AREAS", style={
+                            "fontSize": "9px", "color": "#58A6FF", "letterSpacing": "0.12em",
+                            "marginBottom": "12px", "borderBottom": "1px solid #21262D",
+                            "paddingBottom": "6px",
+                        }),
+                        html.Div(build_area_stats(), id="area-stats"),
+                        html.P("CONFIDENCE", style={
+                            "fontSize": "9px", "color": "#8B949E",
+                            "letterSpacing": "0.1em", "marginTop": "12px", "marginBottom": "6px",
+                        }),
+                        *[html.Div([
+                            html.Span("● ", style={"color": c, "fontSize": "10px"}),
+                            html.Span(label, style={"fontSize": "9px", "color": "#8B949E"}),
+                        ]) for c, label in [
+                            ("#3FB950", "≥ 80%  Strong"),
+                            ("#F0883E", "60–79%  Review"),
+                            ("#EF5350", "< 60%  Focus here"),
+                        ]],
+                    ]),
+                    # Oracle sidebar
+                    html.Div(id="oracle-sidebar", style={"display": "none"}, children=[
+                        html.P("ORACLE MODE", style={
+                            "fontSize": "9px", "color": "#00eeff", "letterSpacing": "0.12em",
+                            "marginBottom": "12px", "borderBottom": "1px solid #21262D",
+                            "paddingBottom": "6px",
+                        }),
+                        html.P("ASK DAVE ANYTHING", style={
+                            "fontSize": "9px", "color": "#8B949E", "letterSpacing": "0.1em",
+                            "marginBottom": "16px",
+                        }),
+                        *[html.Div([
+                            html.Span("→ ", style={"color": "#00eeff", "fontSize": "10px"}),
+                            html.Span(topic, style={"fontSize": "10px", "color": "#8B949E",
+                                                    "lineHeight": "1.6"}),
+                        ], style={"marginBottom": "10px"}) for topic in [
+                            "Rotax 912 systems & quirks",
+                            "Front range weather",
+                            "Mountain wave & turbulence",
+                            "Airspace & regs (MOSAIC)",
+                            "Density altitude at KFNL",
+                            "Emergency procedures",
+                            "Cross-country planning",
+                            "Sport Pilot privileges",
+                            "Aerodynamics & stalls",
+                            "Anything you flew today",
+                        ]],
+                        html.Div(style={
+                            "marginTop": "20px", "paddingTop": "12px",
+                            "borderTop": "1px solid #21262D",
+                        }, children=[
+                            html.P("SESSION NOT LOGGED", style={
+                                "fontSize": "9px", "color": "#004455",
+                                "letterSpacing": "0.1em",
+                            }),
+                            html.P("Use Export Session to save this conversation.",
+                                   style={"fontSize": "9px", "color": "#555",
+                                          "lineHeight": "1.5"}),
+                        ]),
+                    ]),
                 ]),
                 # Chat
                 html.Div(style={
@@ -733,6 +779,8 @@ def toggle_mode(dpe_clicks, oracle_clicks):
     Output("exam-screen",      "style"),
     Output("pilot-name-store", "data"),
     Output("header-title",     "children"),
+    Output("dpe-sidebar",      "style"),
+    Output("oracle-sidebar",   "style"),
     Output("splash-message",   "children"),
     Output("splash-message",   "className"),
     Input("splash-btn",        "n_clicks"),
@@ -743,13 +791,17 @@ def toggle_mode(dpe_clicks, oracle_clicks):
 )
 def handle_splash(n_clicks, n_submit, name, mode):
     if not name or not name.strip():
-        return no_update, no_update, no_update, no_update, "// enter your name to begin", "msg-denied"
+        return no_update, no_update, no_update, no_update, no_update, no_update, "// enter your name to begin", "msg-denied"
     pilot = name.strip().title()
     if mode == "oracle":
         title = f"ORACLE MODE  //  {pilot.upper()}"
+        dpe_style = {"display": "none"}
+        oracle_style = {"display": "block"}
     else:
         title = "DPE SPORT PILOT ORAL EXAMINER"
-    return HIDE, SHOW, pilot, title, no_update, no_update
+        dpe_style = {"display": "block"}
+        oracle_style = {"display": "none"}
+    return HIDE, SHOW, pilot, title, dpe_style, oracle_style, no_update, no_update
 
 
 # ---------------------------------------------------------------------------
@@ -761,14 +813,16 @@ def handle_splash(n_clicks, n_submit, name, mode):
     Input("export-btn",          "n_clicks"),
     State("conversation-store",  "data"),
     State("pilot-name-store",    "data"),
-    State("mode-store",          "data"),
+    State("oracle-sidebar",      "style"),
     prevent_initial_call=True,
 )
-def export_session(n_clicks, conversation, pilot_name, mode):
+def export_session(n_clicks, conversation, pilot_name, oracle_style):
     if not conversation:
         return no_update
     pilot = pilot_name or "Pilot"
-    mode_label = "Oracle Mode" if mode == "oracle" else "DPE Exam Mode"
+    is_oracle = oracle_style and oracle_style.get("display") == "block"
+    mode_label = "Oracle Mode" if is_oracle else "DPE Exam Mode"
+    mode_slug = "oracle" if is_oracle else "dpe"
     lines = [
         f"DPE Sport Pilot Oral Examiner — {mode_label}",
         f"Pilot: {pilot}",
@@ -782,7 +836,7 @@ def export_session(n_clicks, conversation, pilot_name, mode):
         lines.append(msg["content"])
         lines.append("")
     content = "\n".join(lines)
-    filename = f"dpe_session_{date.today().isoformat()}_{mode}.txt"
+    filename = f"dpe_session_{date.today().isoformat()}_{mode_slug}.txt"
     return dcc.send_string(content, filename)
 
 
@@ -807,16 +861,19 @@ def export_session(n_clicks, conversation, pilot_name, mode):
     State("session-meta-store",  "data"),
     State("pilot-name-store",    "data"),
     State("mode-store",          "data"),
+    State("oracle-sidebar",      "style"),
     prevent_initial_call=True,
 )
 def handle_interaction(start_clicks, send_clicks, user_text,
-                       conversation, meta, pilot_name, mode):
+                       conversation, meta, pilot_name, mode, oracle_style):
 
     pilot_name = pilot_name or "Pilot"
     trigger = ctx.triggered_id
+    # Use sidebar visibility as ground truth for mode — avoids store race condition
+    is_oracle = oracle_style and oracle_style.get("display") == "block"
 
     if trigger == "start-btn":
-        if mode == "oracle":
+        if is_oracle:
             system_prompt = build_oracle_prompt(pilot_name)
             meta = {
                 "active": True, "topics": [], "system_prompt": system_prompt,
@@ -860,7 +917,7 @@ def handle_interaction(start_clicks, send_clicks, user_text,
         response = get_ai_response(conversation, system_prompt)
         conversation = conversation + [{"role": "assistant", "content": response}]
 
-        if mode != "oracle":
+        if not is_oracle:
             hint_keywords = ["think about", "remember", "hint", "consider",
                              "what about", "clue", "nudge"]
             topics = meta.get("topics", [])
