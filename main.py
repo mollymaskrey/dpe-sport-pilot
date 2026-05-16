@@ -16,6 +16,255 @@ from dash import Dash, dcc, html, Input, Output, State, ctx, no_update
 import dash_bootstrap_components as dbc
 
 # ---------------------------------------------------------------------------
+# TRON splash CSS
+# ---------------------------------------------------------------------------
+
+TRON_CSS = """
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+.tron-wrap {
+    background: #000;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding: 2rem;
+    font-family: 'Share Tech Mono', 'Courier New', monospace;
+}
+
+.scan-line {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 2px;
+    background: linear-gradient(90deg, transparent, #00eeff, transparent);
+    animation: scan 4s linear infinite;
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: 10;
+}
+@keyframes scan {
+    0%   { top: 0%; }
+    100% { top: 100%; }
+}
+
+.tron-logo {
+    font-size: 11px;
+    letter-spacing: 6px;
+    color: #555;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    animation: fadeIn 1s ease 0.5s both;
+}
+.tron-title {
+    font-size: 52px;
+    font-weight: bold;
+    letter-spacing: 14px;
+    color: #00eeff;
+    text-transform: uppercase;
+    text-shadow: 0 0 20px #00eeff, 0 0 60px #00eeff88, 0 0 100px #00eeff44;
+    margin-bottom: 4px;
+    animation: fadeIn 1s ease 0.8s both;
+    font-family: 'Share Tech Mono', monospace;
+}
+.tron-sub {
+    font-size: 10px;
+    letter-spacing: 6px;
+    color: #006677;
+    text-transform: uppercase;
+    margin-bottom: 48px;
+    animation: fadeIn 1s ease 1.1s both;
+}
+
+.loader-wrap {
+    width: 380px;
+    margin-bottom: 40px;
+    animation: fadeIn 1s ease 1.4s both;
+}
+.loader-label {
+    font-size: 9px;
+    letter-spacing: 4px;
+    color: #006677;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+}
+.loader-bar-bg {
+    width: 100%;
+    height: 3px;
+    background: #001a1f;
+    border: 1px solid #003344;
+    position: relative;
+    overflow: hidden;
+}
+.loader-bar {
+    height: 100%;
+    width: 0%;
+    background: #00eeff;
+    box-shadow: 0 0 10px #00eeff, 0 0 20px #00eeff88;
+    animation: load 3s ease 1.8s forwards;
+}
+@keyframes load {
+    0%   { width: 0%; }
+    20%  { width: 15%; }
+    45%  { width: 42%; }
+    70%  { width: 71%; }
+    88%  { width: 88%; }
+    100% { width: 100%; }
+}
+
+.auth-panel {
+    width: 400px;
+    border: 1px solid #004455;
+    background: #000d10;
+    padding: 28px 32px;
+    animation: fadeIn 1.2s ease 4.8s both;
+    position: relative;
+}
+.auth-panel::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: 24px; right: 24px; height: 1px;
+    background: #00eeff;
+    box-shadow: 0 0 10px #00eeff;
+}
+.auth-label {
+    font-size: 9px;
+    letter-spacing: 4px;
+    color: #006677;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    font-family: 'Share Tech Mono', monospace;
+}
+.auth-input-wrap {
+    display: flex;
+    align-items: center;
+    border: 1px solid #004455;
+    background: #000a0d;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    transition: border-color 0.3s;
+}
+.auth-input-wrap:focus-within {
+    border-color: #00eeff;
+    box-shadow: 0 0 12px #00eeff22;
+}
+.auth-prompt {
+    color: #00eeff;
+    font-size: 14px;
+    margin-right: 10px;
+    opacity: 0.7;
+    user-select: none;
+    font-family: 'Share Tech Mono', monospace;
+}
+#pilot-name-input {
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    color: #00eeff !important;
+    font-family: 'Share Tech Mono', 'Courier New', monospace !important;
+    font-size: 14px !important;
+    letter-spacing: 3px !important;
+    flex: 1;
+    caret-color: #00eeff;
+    box-shadow: none !important;
+    width: 100%;
+}
+#pilot-name-input::placeholder {
+    color: #003344;
+    letter-spacing: 2px;
+}
+.auth-btn {
+    width: 100%;
+    background: transparent;
+    border: 1px solid #00eeff;
+    color: #00eeff;
+    font-family: 'Share Tech Mono', 'Courier New', monospace;
+    font-size: 10px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    padding: 11px;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    box-shadow: 0 0 10px #00eeff22;
+}
+.auth-btn:hover {
+    background: #00eeff15;
+    box-shadow: 0 0 20px #00eeff44;
+}
+#splash-message {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 14px;
+    min-height: 18px;
+    text-align: center;
+    font-family: 'Share Tech Mono', monospace;
+}
+.msg-granted { color: #00ff88; text-shadow: 0 0 10px #00ff8888; }
+.msg-denied  { color: #ff3333; text-shadow: 0 0 10px #ff333388; }
+.msg-waiting { color: #006677; }
+
+.corner {
+    position: fixed;
+    width: 16px; height: 16px;
+    border-color: #00eeff;
+    border-style: solid;
+    opacity: 0.5;
+}
+.corner.tl { top: 12px; left: 12px; border-width: 1px 0 0 1px; }
+.corner.tr { top: 12px; right: 12px; border-width: 1px 1px 0 0; }
+.corner.bl { bottom: 12px; left: 12px; border-width: 0 0 1px 1px; }
+.corner.br { bottom: 12px; right: 12px; border-width: 0 1px 1px 0; }
+
+.hex-badge {
+    position: fixed;
+    top: 18px; right: 24px;
+    font-size: 8px;
+    letter-spacing: 2px;
+    color: #003344;
+    text-transform: uppercase;
+    font-family: 'Share Tech Mono', monospace;
+}
+.status-row {
+    display: flex;
+    justify-content: space-between;
+    width: 400px;
+    margin-top: 20px;
+    animation: fadeIn 1s ease 5.2s both;
+}
+.status-dot {
+    font-size: 8px;
+    letter-spacing: 2px;
+    color: #004455;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Share Tech Mono', monospace;
+}
+.dot-live {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #00eeff;
+    box-shadow: 0 0 8px #00eeff;
+    animation: pulse 2s ease-in-out infinite;
+    flex-shrink: 0;
+}
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.2; }
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+"""
+
+# ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
 
@@ -190,13 +439,13 @@ def update_session_log(topic_key: str, hint_count: int, turns: int):
 # System prompt builder
 # ---------------------------------------------------------------------------
 
-def build_system_prompt(topics: list) -> str:
+def build_system_prompt(topics: list, pilot_name: str = "Molly") -> str:
     topic_details = "\n".join(
         f"- {KNOWLEDGE_AREAS[t]['label']}: {KNOWLEDGE_AREAS[t]['description']}"
         for t in topics
     )
 
-    return f"""You are Dave, a Designated Pilot Examiner (DPE) conducting a Sport Pilot oral exam at Fort Collins-Loveland Municipal Airport (KFNL) in northern Colorado. You have 30 years of flying experience in the Rocky Mountain region and genuinely love aviation. You want every applicant to pass — you are encouraging, friendly, and collegial. You call the applicant Molly.
+    return f"""You are Dave, a Designated Pilot Examiner (DPE) conducting a Sport Pilot oral exam at Fort Collins-Loveland Municipal Airport (KFNL) in northern Colorado. You have 30 years of flying experience in the Rocky Mountain region and genuinely love aviation. You want every applicant to pass — you are encouraging, friendly, and collegial. You call the applicant {pilot_name}.
 
 AIRCRAFT: The applicant is flying a carbureted Van's RV-12 with a Rotax 912 ULS engine. All questions should be grounded in this specific aircraft.
 
@@ -213,7 +462,7 @@ YOUR EXAMINATION STYLE — THE SOCRATIC METHOD:
 
 SPORT PILOT SPECIFIC:
 - Ask "As a Sport Pilot, can you..." questions frequently. These are prime DPE territory.
-- Know the MOSAIC rule changes and probe whether Molly understands what has changed vs. old rules.
+- Know the MOSAIC rule changes and probe whether {pilot_name} understands what has changed vs. old rules.
 - The 59-knot VS1 stall speed criterion is central to Sport Pilot / MOSAIC eligibility.
 
 TODAY'S TOPIC AREAS (work through these, spending real time on each):
@@ -223,9 +472,9 @@ SESSION FLOW:
 - Start with a warm welcome and a scenario-based opening question from the first topic.
 - Spend 4-6 exchanges on each topic area before transitioning naturally.
 - Transition by saying something like "Alright, let's shift gears..." 
-- End the session when all topics are covered with a brief, honest summary of how Molly did and any areas to review.
+- End the session when all topics are covered with a brief, honest summary of how {pilot_name} did and any areas to review.
 
-TONE: Friendly, experienced mountain pilot. Never adversarial. Think of it as a conversation between two pilots, one of whom happens to be evaluating the other. Use aviation shorthand naturally (DA, MSL, AGL, METAR, etc.) — Molly knows the language.
+TONE: Friendly, experienced mountain pilot. Never adversarial. Think of it as a conversation between two pilots, one of whom happens to be evaluating the other. Use aviation shorthand naturally (DA, MSL, AGL, METAR, etc.) — {pilot_name} knows the language.
 
 Do not break character. Do not explain that you are an AI. You are Dave."""
 
@@ -246,7 +495,82 @@ def get_ai_response(messages: list, system_prompt: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Layout
+# Splash screen layout
+# ---------------------------------------------------------------------------
+
+def build_splash():
+    grid_bg = html.Div(style={
+        "position": "absolute",
+        "top": 0, "left": 0, "right": 0, "bottom": 0,
+        "backgroundImage": (
+            "linear-gradient(rgba(0,238,255,0.07) 1px, transparent 1px),"
+            "linear-gradient(90deg, rgba(0,238,255,0.07) 1px, transparent 1px)"
+        ),
+        "backgroundSize": "50px 50px",
+        "pointerEvents": "none",
+    })
+
+    return html.Div([
+        html.Div(className="corner tl"),
+        html.Div(className="corner tr"),
+        html.Div(className="corner bl"),
+        html.Div(className="corner br"),
+        html.Div(className="scan-line"),
+        html.Div("SYS:DPE.AX // v1.0.0", className="hex-badge"),
+
+        html.Div(className="tron-wrap", children=[
+            grid_bg,
+            html.Div("KFNL · RV-12 · ROTAX 912", className="tron-logo"),
+            html.Div("DPE", className="tron-title"),
+            html.Div("Sport Pilot Oral Examiner", className="tron-sub"),
+
+            html.Div(className="loader-wrap", children=[
+                html.Div(className="loader-label", children=[
+                    html.Span("Initializing knowledge grid"),
+                    html.Span(""),
+                ]),
+                html.Div(className="loader-bar-bg", children=[
+                    html.Div(className="loader-bar"),
+                ]),
+            ]),
+
+            html.Div(className="auth-panel", children=[
+                html.Div("// Pilot Identity", className="auth-label"),
+                html.Div(className="auth-input-wrap", children=[
+                    html.Span(">_", className="auth-prompt"),
+                    dcc.Input(
+                        id="pilot-name-input",
+                        type="text",
+                        placeholder="enter your name",
+                        debounce=False,
+                        autoFocus=True,
+                        n_submit=0,
+                        maxLength=30,
+                        style={"flex": 1},
+                    ),
+                ]),
+                html.Button(
+                    "Begin Oral Exam →",
+                    id="splash-btn",
+                    className="auth-btn",
+                    n_clicks=0,
+                ),
+                html.Div("", id="splash-message", className="msg-waiting"),
+            ]),
+
+            html.Div(className="status-row", children=[
+                html.Div(className="status-dot", children=[
+                    html.Div(className="dot-live"),
+                    html.Span("System online"),
+                ]),
+                html.Div("Northern Colorado // KFNL", className="status-dot"),
+            ]),
+        ]),
+    ], style={"minHeight": "100vh", "background": "#000", "position": "relative"})
+
+
+# ---------------------------------------------------------------------------
+# Main exam layout
 # ---------------------------------------------------------------------------
 
 def build_layout():
@@ -397,7 +721,7 @@ def build_layout():
                                             html.Div("✈", style={"fontSize": "40px",
                                                                    "marginBottom": "16px",
                                                                    "color": "#30363D"}),
-                                            html.P("Ready when you are, Molly.",
+                                            html.P("Ready when you are.",
                                                    style={"marginBottom": "8px"}),
                                             html.P("Hit Start Session to begin your oral exam.",
                                                    style={"fontSize": "10px",
@@ -494,6 +818,7 @@ def build_layout():
                 "hint_counts": {},
                 "turn_counts": {},
             }),
+            dcc.Store(id="pilot-name-store", data="Pilot"),
             dcc.Store(id="thinking-store", data=False),
         ]
     )
@@ -503,7 +828,7 @@ def build_layout():
 # Message bubble builder
 # ---------------------------------------------------------------------------
 
-def make_bubble(role: str, text: str) -> html.Div:
+def make_bubble(role: str, text: str, pilot_name: str = "Pilot") -> html.Div:
     is_dave = role == "assistant"
     return html.Div(
         style={
@@ -513,7 +838,7 @@ def make_bubble(role: str, text: str) -> html.Div:
         },
         children=[
             html.Div(
-                html.Span("Dave" if is_dave else "Molly",
+                html.Span("Dave" if is_dave else pilot_name,
                           style={"fontSize": "9px",
                                  "color": "#58A6FF" if is_dave else "#3FB950",
                                  "letterSpacing": "0.08em"}),
@@ -549,15 +874,57 @@ app = Dash(
     external_stylesheets=[
         dbc.themes.DARKLY,
         "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&display=swap",
-    ]
+    ],
+    suppress_callback_exceptions=True,
 )
 server = app.server
-app.layout = build_layout()
+
+app.index_string = f"""
+<!DOCTYPE html>
+<html>
+<head>
+    {{%metas%}}
+    <title>DPE Sport Pilot Examiner</title>
+    {{%favicon%}}
+    {{%css%}}
+    <style>{TRON_CSS}</style>
+</head>
+<body>
+    {{%app_entry%}}
+    {{%config%}}
+    {{%scripts%}}
+    {{%renderer%}}
+</body>
+</html>
+"""
+
+app.layout = html.Div([
+    dcc.Store(id="pilot-name-store", data=""),
+    dcc.Location(id="url"),
+    html.Div(id="page-content", children=build_splash()),
+])
 
 
 # ---------------------------------------------------------------------------
 # Callbacks
 # ---------------------------------------------------------------------------
+
+@app.callback(
+    Output("page-content",      "children"),
+    Output("pilot-name-store",  "data"),
+    Output("splash-message",    "children"),
+    Output("splash-message",    "className"),
+    Input("splash-btn",         "n_clicks"),
+    Input("pilot-name-input",   "n_submit"),
+    State("pilot-name-input",   "value"),
+    prevent_initial_call=True,
+)
+def handle_splash(n_clicks, n_submit, name):
+    if not name or not name.strip():
+        return no_update, no_update, "// enter your name to begin", "msg-denied"
+    pilot = name.strip().title()
+    return build_layout(), pilot, f"// welcome, {pilot}", "msg-granted"
+
 
 @app.callback(
     Output("conversation-store",  "data"),
@@ -574,17 +941,19 @@ app.layout = build_layout()
     State("conversation-store",   "data"),
     State("session-meta-store",   "data"),
     State("chat-display",         "children"),
+    State("pilot-name-store",     "data"),
     prevent_initial_call=True,
 )
 def handle_interaction(start_clicks, send_clicks, user_text,
-                        conversation, meta, current_bubbles):
+                        conversation, meta, current_bubbles, pilot_name):
 
+    pilot_name = pilot_name or "Pilot"
     trigger = ctx.triggered_id
 
     # ── START SESSION ──────────────────────────────────────────────────────
     if trigger == "start-btn":
         topics = pick_topics(3)
-        system_prompt = build_system_prompt(topics)
+        system_prompt = build_system_prompt(topics, pilot_name)
         meta = {
             "active": True,
             "topics": topics,
@@ -598,7 +967,7 @@ def handle_interaction(start_clicks, send_clicks, user_text,
         opening = get_ai_response([], system_prompt)
         conversation = [{"role": "assistant", "content": opening}]
 
-        bubbles = [make_bubble("assistant", opening)]
+        bubbles = [make_bubble("assistant", opening, pilot_name)]
         topic_labels = " → ".join(
             KNOWLEDGE_AREAS[t]["label"] for t in topics
         )
@@ -648,7 +1017,7 @@ def handle_interaction(start_clicks, send_clicks, user_text,
         # Rebuild bubble list
         bubbles = []
         for msg in conversation:
-            bubbles.append(make_bubble(msg["role"], msg["content"]))
+            bubbles.append(make_bubble(msg["role"], msg["content"], pilot_name))
 
         return (conversation, meta, bubbles, no_update,
                 False, False, no_update, "")
