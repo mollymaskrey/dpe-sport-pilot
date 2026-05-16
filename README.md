@@ -2,6 +2,8 @@
 
 A Socratic oral exam simulator and aviation knowledge tool for Sport Pilot applicants, grounded in KFNL (Fort Collins-Loveland Municipal Airport), the Van's RV-12 with a carbureted Rotax 912 ULS, and northern Colorado airspace and weather. Built with Dash/Plotly, deployed on Render.
 
+> **Two modes:** ⚡ **DPE Exam** — Dave picks topics and runs a Socratic oral exam, tracking your confidence over time. ◎ **Oracle** — you bring a question, Dave goes deep, no pressure, no logging.
+
 ---
 
 ## Overview
