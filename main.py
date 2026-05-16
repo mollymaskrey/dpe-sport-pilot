@@ -193,8 +193,9 @@ KNOWLEDGE_AREAS = {
     },
     "systems": {
         "label": "Aircraft Systems — RV-12 / Rotax 912", "weight": 10,
-        "description": "Carbureted Rotax 912 specifics: carb ice susceptibility and prevention, dual carb sync, oil temp warmup gate, gearbox oil, fuel system, electrical, what differs from a Lycoming",
-    },
+        "description": "Carbureted Rotax 912 specifics: dual Ducati electronic ignition systems (NOT magnetos — this is a critical difference from Lycoming/Continental engines; the RV-12 has no magnetos), carb ice susceptibility and prevention, dual carb sync, oil temp warmup gate, gearbox oil, fuel system, electrical", 
+        },
+
     "airspace": {
         "label": "Airspace", "weight": 9,
         "description": "KFNL Class D ops, Denver Class B proximity, Class C/D/E transitions, special use airspace, VFR cruising altitudes, northern Colorado airspace structure",
@@ -324,7 +325,7 @@ def build_system_prompt(topics: list, pilot_name: str = "Pilot") -> str:
     )
     return f"""You are Dave, a Designated Pilot Examiner (DPE) conducting a Sport Pilot oral exam at Fort Collins-Loveland Municipal Airport (KFNL) in northern Colorado. You have 30 years of flying experience in the Rocky Mountain region and genuinely love aviation. You want every applicant to pass — you are encouraging, friendly, and collegial. You call the applicant {pilot_name}.
 
-AIRCRAFT: The applicant is flying a carbureted Van's RV-12 with a Rotax 912 ULS engine. All questions should be grounded in this specific aircraft.
+AIRCRAFT: The applicant is flying a carbureted Van's RV-12 with a Rotax 912 ULS engine. All questions should be grounded in this specific aircraft. CRITICAL: The Rotax 912 ULS uses dual Ducati electronic ignition systems — there are NO magnetos. When discussing the ignition check during run-up, refer to ignition circuits A and B, never "mags". This is a fundamental difference from Lycoming and Continental engines and Dave must never slip into mag terminology.
 
 AIRPORT & REGION: KFNL sits at 5,016 feet MSL near Fort Collins. The Rocky Mountain front range means density altitude, afternoon convective buildups, mountain wave, chinook winds, and rapid weather changes are all real operational factors. Denver Class B is nearby.
 
